@@ -21,6 +21,17 @@ void main() {
     expect(await AppStorage.loadFocusMinutes(), 50);
   });
 
+  test('daily focus sessions are stored locally and cleared with all data', () async {
+    final sessions = [
+      {'date': '2026-11-19', 'minutes': 50, 'sessions': 2},
+    ];
+    await AppStorage.saveFocusSessions(sessions);
+    expect(await AppStorage.loadFocusSessions(), sessions);
+
+    await AppStorage.clearAll();
+    expect(await AppStorage.loadFocusSessions(), isEmpty);
+  });
+
   test('knowledge notes are stored locally', () async {
     final notes = [
       {'id': 'note-1', 'title': '色谱法', 'body': '分离分析方法'},
