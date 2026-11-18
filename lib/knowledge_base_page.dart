@@ -39,51 +39,10 @@ class _KnowledgeBasePageState extends State<KnowledgeBasePage> {
   Future<void> _saveNotes() => AppStorage.saveNotes(_notes);
 
   Future<void> _editNote({Map<String, dynamic>? note}) async {
-    final titleController = TextEditingController(text: note?['title'] as String? ?? '');
-    final bodyController = TextEditingController(text: note?['body'] as String? ?? '');
     final result = await showDialog<Map<String, String>>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(note == null ? '新建笔记' : '编辑笔记'),
-        content: SizedBox(
-          width: 420,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                maxLength: 40,
-                decoration: const InputDecoration(labelText: '笔记标题', hintText: '例如：色谱法重点整理'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: bodyController,
-                minLines: 4,
-                maxLines: 8,
-                maxLength: 2000,
-                decoration: const InputDecoration(
-                  labelText: '笔记内容',
-                  hintText: '记录知识点、公式或复习心得…',
-                  alignLabelWithHint: true,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, {
-              'title': titleController.text.trim(),
-              'body': bodyController.text.trim(),
-            }),
-            child: const Text('保存'),
-          ),
-        ],
-      ),
+      builder: (context) => _NoteEditorDialog(note: note),
     );
-    titleController.dispose();
-    bodyController.dispose();
 
     if (result == null || result['title']!.isEmpty) return;
     setState(() {
@@ -234,6 +193,76 @@ class _KnowledgeBasePageState extends State<KnowledgeBasePage> {
                         );
                       },
                     ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class _NoteEditorDialog extends StatefulWidget {
+  const _NoteEditorDialog({this.note});
+  final Map<String, dynamic>? note;
+
+  @override
+  State<_NoteEditorDialog> createState() => _NoteEditorDialogState();
+}
+
+class _NoteEditorDialogState extends State<_NoteEditorDialog> {
+  late final TextEditingController _titleController;
+  late final TextEditingController _bodyController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.note?['title'] as String? ?? '');
+    _bodyController = TextEditingController(text: widget.note?['body'] as String? ?? '');
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bodyController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.note == null ? '新建笔记' : '编辑笔记'),
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _titleController,
+              maxLength: 40,
+              decoration: const InputDecoration(labelText: '笔记标题', hintText: '例如：色谱法重点整理'),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _bodyController,
+              minLines: 4,
+              maxLines: 8,
+              maxLength: 2000,
+              decoration: const InputDecoration(
+                labelText: '笔记内容',
+                hintText: '记录知识点、公式或复习心得…',
+                alignLabelWithHint: true,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, {
+            'title': _titleController.text.trim(),
+            'body': _bodyController.text.trim(),
+          }),
+          child: const Text('保存'),
         ),
       ],
     );
