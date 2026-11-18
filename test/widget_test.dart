@@ -79,11 +79,11 @@ void main() {
     expect(find.text('学习统计'), findsOneWidget);
     expect(find.text('任务完成率'), findsOneWidget);
     expect(find.text('累计专注'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('最近 7 天专注'), 350);
+    await tester.dragUntilVisible(find.text('最近 7 天专注'), find.byType(ListView), const Offset(0, -300));
     expect(find.text('最近 7 天专注'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('数据存储'), 350);
+    await tester.dragUntilVisible(find.text('数据存储'), find.byType(ListView), const Offset(0, -300));
     expect(find.text('数据存储'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('清空所有学习数据'), 350);
+    await tester.dragUntilVisible(find.text('清空所有学习数据'), find.byType(ListView), const Offset(0, -300));
     expect(find.text('清空所有学习数据'), findsOneWidget);
   });
 
@@ -91,7 +91,7 @@ void main() {
     await tester.pumpWidget(const MimiStudyApp());
     await tester.tap(find.text('我的'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('清空所有学习数据'));
+    await tester.dragUntilVisible(find.text('清空所有学习数据'), find.byType(ListView), const Offset(0, -300));
     await tester.tap(find.text('清空所有学习数据'));
     await tester.pumpAndSettle();
     expect(find.text('清空所有学习数据？'), findsOneWidget);
