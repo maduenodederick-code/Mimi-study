@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:ui' show FontFeature;
 import 'package:flutter/material.dart';
 import 'ai_assistant_page.dart';
+import 'app_storage.dart';
+import 'knowledge_base_page.dart';
 
 void main() => runApp(const MimiStudyApp());
 const blush = Color(0xFFF4A9B8), cream = Color(0xFFFFFAF7), ink = Color(0xFF45383B), muted = Color(0xFF927F83), line = Color(0xFFF3E9E7);
@@ -15,9 +17,15 @@ class MimiStudyApp extends StatelessWidget {
 }
 
 class StudyTask {
-  StudyTask(this.title);
+  StudyTask(this.title, {this.completed = false});
   final String title;
-  bool completed = false;
+  bool completed;
+
+  Map<String, dynamic> toJson() => {'title': title, 'completed': completed};
+  factory StudyTask.fromJson(Map<String, dynamic> json) => StudyTask(
+    json['title'] as String? ?? '',
+    completed: json['completed'] as bool? ?? false,
+  );
 }
 
 class MainShell extends StatefulWidget {
@@ -28,7 +36,40 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int tab = 0;
+  int focusMinutes = 0;
   final tasks = <StudyTask>[];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedData();
+  }
+
+  Future<void> _loadSavedData() async {
+    final results = await Future.wait([
+      AppStorage.loadTasks(),
+      AppStorage.loadFocusMinutes(),
+    ]);
+    if (!mounted) return;
+    setState(() {
+      tasks
+        ..clear()
+        ..addAll((results[0] as List<Map<String, dynamic>>).map(StudyTask.fromJson));
+      focusMinutes = results[1] as int;
+    });
+  }
+
+  Future<void> _saveTasks() => AppStorage.saveTasks(tasks.map((task) => task.toJson()).toList());
+
+  void _taskChanged() {
+    setState(() {});
+    _saveTasks();
+  }
+
+  void _recordFocusSession() {
+    setState(() => focusMinutes += 25);
+    AppStorage.saveFocusMinutes(focusMinutes);
+  }
 
   Future<void> addTask() async {
     final input = TextEditingController();
@@ -41,18 +82,21 @@ class _MainShellState extends State<MainShell> {
         FilledButton(onPressed: () => Navigator.pop(context, input.text.trim()), child: const Text('添加')),
       ]));
     input.dispose();
-    if (value != null && value.isNotEmpty) setState(() => tasks.insert(0, StudyTask(value)));
+    if (value != null && value.isNotEmpty) {
+      setState(() => tasks.insert(0, StudyTask(value)));
+      await _saveTasks();
+    }
   }
 
-  void openTimer() => showDialog(context: context, builder: (_) => const PomodoroDialog());
+  void openTimer() => showDialog(context: context, builder: (_) => PomodoroDialog(onFocusCompleted: _recordFocusSession));
 
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(tasks: tasks, addTask: addTask, openTimer: openTimer, refresh: () => setState(() {}), goPlan: () => setState(() => tab = 1)),
-      PlanPage(tasks: tasks, addTask: addTask, refresh: () => setState(() {})),
+      HomePage(tasks: tasks, addTask: addTask, openTimer: openTimer, refresh: _taskChanged, goPlan: () => setState(() => tab = 1), focusMinutes: focusMinutes),
+      PlanPage(tasks: tasks, addTask: addTask, refresh: _taskChanged),
       const AiAssistantPage(),
-      const PlaceholderPage(title: '知识库', subtitle: '集中整理课程、笔记与知识卡片。', icon: Icons.menu_book_rounded),
+      const KnowledgeBasePage(),
       const PlaceholderPage(title: '我的', subtitle: '查看学习记录与个人设置。', icon: Icons.person_rounded),
     ];
     return Scaffold(body: SafeArea(child: pages[tab]), bottomNavigationBar: NavigationBar(
@@ -72,6 +116,7 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.tasks, required this.addTask, required this.openTimer, required this.refresh, required this.goPlan});
   final List<StudyTask> tasks;
   final VoidCallback addTask, openTimer, goPlan, refresh;
+  final int focusMinutes;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +144,7 @@ class HomePage extends StatelessWidget {
       Row(children: [
         Expanded(child: MetricCard(icon: Icons.check_circle_outline_rounded, title: '待完成任务', value: pending.toString(), detail: '已完成 $done 项', tint: const Color(0xFFEAF3FF))),
         const SizedBox(width: 12),
-        const Expanded(child: MetricCard(icon: Icons.local_fire_department_rounded, title: '专注时长', value: '0 分钟', detail: '今天继续加油', tint: Color(0xFFFFF0E6))),
+        Expanded(child: MetricCard(icon: Icons.local_fire_department_rounded, title: '累计专注', value: '$focusMinutes 分钟', detail: '完成专注后自动记录', tint: const Color(0xFFFFF0E6))),
       ]),
       const SizedBox(height: 22), const Heading('快速开始'), const SizedBox(height: 12),
       Row(children: [
@@ -173,7 +218,8 @@ class TaskRow extends StatelessWidget {
 }
 
 class PomodoroDialog extends StatefulWidget {
-  const PomodoroDialog({super.key});
+  const PomodoroDialog({super.key, required this.onFocusCompleted});
+  final VoidCallback onFocusCompleted;
   @override
   State<PomodoroDialog> createState() => _PomodoroDialogState();
 }
@@ -192,6 +238,7 @@ class _PomodoroDialogState extends State<PomodoroDialog> {
       if (!mounted) { t.cancel(); return; }
       if (remaining <= 1) {
         t.cancel(); setState(() { remaining = 0; running = false; });
+        if (selected == 25) widget.onFocusCompleted();
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('专注时间结束，休息一下吧！')));
       } else { setState(() => remaining--); }
     });
