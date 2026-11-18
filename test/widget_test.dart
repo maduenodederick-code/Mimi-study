@@ -72,4 +72,26 @@ void main() {
     expect(find.text('药物分析重点'), findsOneWidget);
   });
 
+  testWidgets('profile shows learning statistics and settings', (tester) async {
+    await tester.pumpWidget(const MimiStudyApp());
+    await tester.tap(find.text('我的'));
+    await tester.pumpAndSettle();
+    expect(find.text('学习统计'), findsOneWidget);
+    expect(find.text('任务完成率'), findsOneWidget);
+    expect(find.text('累计专注'), findsOneWidget);
+    expect(find.text('数据存储'), findsOneWidget);
+    expect(find.text('清空所有学习数据'), findsOneWidget);
+  });
+
+  testWidgets('profile requires confirmation before clearing data', (tester) async {
+    await tester.pumpWidget(const MimiStudyApp());
+    await tester.tap(find.text('我的'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('清空所有学习数据'));
+    await tester.pumpAndSettle();
+    expect(find.text('清空所有学习数据？'), findsOneWidget);
+    await tester.tap(find.text('取消'));
+    await tester.pumpAndSettle();
+    expect(find.text('清空所有学习数据？'), findsNothing);
+  });
 }
