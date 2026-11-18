@@ -79,10 +79,11 @@ void main() {
     expect(find.text('学习统计'), findsOneWidget);
     expect(find.text('任务完成率'), findsOneWidget);
     expect(find.text('累计专注'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('最近 7 天专注'), 350);
     expect(find.text('最近 7 天专注'), findsOneWidget);
-    await tester.ensureVisible(find.text('数据存储'));
+    await tester.scrollUntilVisible(find.text('数据存储'), 350);
     expect(find.text('数据存储'), findsOneWidget);
-    await tester.ensureVisible(find.text('清空所有学习数据'));
+    await tester.scrollUntilVisible(find.text('清空所有学习数据'), 350);
     expect(find.text('清空所有学习数据'), findsOneWidget);
   });
 
