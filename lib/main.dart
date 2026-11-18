@@ -113,7 +113,7 @@ class _MainShellState extends State<MainShell> {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.tasks, required this.addTask, required this.openTimer, required this.refresh, required this.goPlan});
+  const HomePage({super.key, required this.tasks, required this.addTask, required this.openTimer, required this.refresh, required this.goPlan, required this.focusMinutes});
   final List<StudyTask> tasks;
   final VoidCallback addTask, openTimer, goPlan, refresh;
   final int focusMinutes;
