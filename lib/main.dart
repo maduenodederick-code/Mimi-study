@@ -39,6 +39,7 @@ class _MainShellState extends State<MainShell> {
   int tab = 0;
   int focusMinutes = 0;
   final tasks = <StudyTask>[];
+  final focusSessions = <Map<String, dynamic>>[];
 
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _MainShellState extends State<MainShell> {
     final results = await Future.wait([
       AppStorage.loadTasks(),
       AppStorage.loadFocusMinutes(),
+      AppStorage.loadFocusSessions(),
     ]);
     if (!mounted) return;
     setState(() {
@@ -57,6 +59,7 @@ class _MainShellState extends State<MainShell> {
         ..clear()
         ..addAll((results[0] as List<Map<String, dynamic>>).map(StudyTask.fromJson));
       focusMinutes = results[1] as int;
+      focusSessions..clear()..addAll(results[2] as List<Map<String, dynamic>>);
     });
   }
 
@@ -70,12 +73,24 @@ class _MainShellState extends State<MainShell> {
   Future<void> _resetAllData() async {
     await AppStorage.clearAll();
     if (!mounted) return;
-    setState(() { tasks.clear(); focusMinutes = 0; });
+    setState(() { tasks.clear(); focusMinutes = 0; focusSessions.clear(); });
   }
 
   void _recordFocusSession() {
-    setState(() => focusMinutes += 25);
+    final now = DateTime.now();
+    final dateKey = '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    setState(() {
+      focusMinutes += 25;
+      final index = focusSessions.indexWhere((record) => record['date'] == dateKey);
+      if (index == -1) {
+        focusSessions.add({'date': dateKey, 'minutes': 25, 'sessions': 1});
+      } else {
+        focusSessions[index]['minutes'] = (focusSessions[index]['minutes'] as int? ?? 0) + 25;
+        focusSessions[index]['sessions'] = (focusSessions[index]['sessions'] as int? ?? 0) + 1;
+      }
+    });
     AppStorage.saveFocusMinutes(focusMinutes);
+    AppStorage.saveFocusSessions(focusSessions);
   }
 
   Future<void> addTask() async {
@@ -104,7 +119,7 @@ class _MainShellState extends State<MainShell> {
       PlanPage(tasks: tasks, addTask: addTask, refresh: _taskChanged),
       const AiAssistantPage(),
       const KnowledgeBasePage(),
-      ProfilePage(tasks: tasks, focusMinutes: focusMinutes, onResetData: _resetAllData),
+      ProfilePage(tasks: tasks, focusMinutes: focusMinutes, focusSessions: focusSessions, onResetData: _resetAllData),
     ];
     return Scaffold(body: SafeArea(child: pages[tab]), bottomNavigationBar: NavigationBar(
       height: 68, selectedIndex: tab, backgroundColor: Colors.white, indicatorColor: const Color(0xFFFFE5EA),
