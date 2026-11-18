@@ -32,4 +32,17 @@ void main() {
     expect(find.text('番茄专注'), findsOneWidget);
     expect(find.text('25:00'), findsOneWidget);
   });
+
+  testWidgets('AI assistant opens the chat preview', (tester) async {
+    await tester.pumpWidget(const MimiStudyApp());
+
+    await tester.tap(find.text('AI 助手'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mimi AI'), findsOneWidget);
+    expect(find.text('预览版'), findsOneWidget);
+    expect(find.textContaining('尚未连接 AI 服务'), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
+  });
+
 }
