@@ -48,7 +48,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(tasks: tasks, addTask: addTask, openTimer: openTimer, goPlan: () => setState(() => tab = 1)),
+      HomePage(tasks: tasks, addTask: addTask, openTimer: openTimer, refresh: () => setState(() {}), goPlan: () => setState(() => tab = 1)),
       PlanPage(tasks: tasks, addTask: addTask, refresh: () => setState(() {})),
       const PlaceholderPage(title: 'AI 助手', subtitle: '让 Mimi 陪你规划、答疑和复习。', icon: Icons.auto_awesome_rounded),
       const PlaceholderPage(title: '知识库', subtitle: '集中整理课程、笔记与知识卡片。', icon: Icons.menu_book_rounded),
@@ -68,9 +68,9 @@ class _MainShellState extends State<MainShell> {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.tasks, required this.addTask, required this.openTimer, required this.goPlan});
+  const HomePage({super.key, required this.tasks, required this.addTask, required this.openTimer, required this.refresh, required this.goPlan});
   final List<StudyTask> tasks;
-  final VoidCallback addTask, openTimer, goPlan;
+  final VoidCallback addTask, openTimer, goPlan, refresh;
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +119,7 @@ class HomePage extends StatelessWidget {
             TextButton(onPressed: addTask, child: const Text('添加')),
           ]))
       else
-        ...tasks.take(3).map((t) => TaskRow(task: t, onChanged: goPlan)),
+        ...tasks.take(3).map((t) => TaskRow(task: t, onChanged: refresh)),
     ]);
   }
 }
