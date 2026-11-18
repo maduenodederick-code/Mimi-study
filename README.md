@@ -1,16 +1,19 @@
 # Mimi Study
 
-Mimi Study is an AI smart learning assistant built with Flutter.
+Mimi Study is a Flutter-based study companion with a soft blush-pink and warm-cream interface.
 
-## Current foundation
+## Features
 
-- Soft blush pink and warm cream visual theme
-- Five-tab navigation: Home, Plan, AI Assistant, Library, and Profile
-- Home dashboard with live task counts and quick actions
-- Add and complete study tasks
-- Study plan progress overview
+- Five-tab navigation: Home, Plan, AI Assistant, Knowledge Base, and Profile
+- Home dashboard with task counts, quick actions, and accumulated focus time
+- Create and complete study tasks, with a study-plan progress overview
 - Pomodoro timer with 25-minute focus, 5-minute short break, and 15-minute long break presets
-- Starter widget tests for the home screen, navigation, and timer
+- Local persistence for study tasks, knowledge-base notes, and accumulated focus minutes
+- Knowledge base with note creation, editing, deletion, and keyword search
+- Profile dashboard with task totals, completion rate, focus time, and note count
+- Profile settings describing the current theme and on-device data storage
+- Confirmed option to clear all locally stored study data
+- AI assistant chat preview (a live AI service is not connected yet)
 
 ## Run locally
 
@@ -22,6 +25,10 @@ flutter test
 flutter run
 ```
 
+## Automated tests
+
+GitHub Actions runs `flutter test` on pushes to `main` and `feature/mimi-study-foundation`, pull requests targeting `main`, and manual workflow dispatches.
+
 ## Development branch
 
 The current implementation is on `feature/mimi-study-foundation`.
@@ -30,5 +37,7 @@ The original `main` branch is preserved. A backup branch named
 
 ## Current limitations
 
-Tasks and timer state are currently held in memory. They reset when the app is restarted.
-The AI assistant, knowledge library, profile, notes, and persistent study history are not implemented yet.
+- Study data is stored locally on the current device; cloud sync and account login are not implemented.
+- The AI assistant is a UI preview and does not yet connect to a model service.
+- Focus tracking stores a cumulative minute total, not a day-by-day session history.
+- Theme selection is currently informational; the app uses its existing pink-and-cream theme.
