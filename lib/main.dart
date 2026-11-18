@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'ai_assistant_page.dart';
 import 'app_storage.dart';
 import 'knowledge_base_page.dart';
+import 'profile_page.dart';
 
 void main() => runApp(const MimiStudyApp());
 const blush = Color(0xFFF4A9B8), cream = Color(0xFFFFFAF7), ink = Color(0xFF45383B), muted = Color(0xFF927F83), line = Color(0xFFF3E9E7);
@@ -66,6 +67,12 @@ class _MainShellState extends State<MainShell> {
     _saveTasks();
   }
 
+  Future<void> _resetAllData() async {
+    await AppStorage.clearAll();
+    if (!mounted) return;
+    setState(() { tasks.clear(); focusMinutes = 0; });
+  }
+
   void _recordFocusSession() {
     setState(() => focusMinutes += 25);
     AppStorage.saveFocusMinutes(focusMinutes);
@@ -97,7 +104,7 @@ class _MainShellState extends State<MainShell> {
       PlanPage(tasks: tasks, addTask: addTask, refresh: _taskChanged),
       const AiAssistantPage(),
       const KnowledgeBasePage(),
-      const PlaceholderPage(title: '我的', subtitle: '查看学习记录与个人设置。', icon: Icons.person_rounded),
+      ProfilePage(tasks: tasks, focusMinutes: focusMinutes, onResetData: _resetAllData),
     ];
     return Scaffold(body: SafeArea(child: pages[tab]), bottomNavigationBar: NavigationBar(
       height: 68, selectedIndex: tab, backgroundColor: Colors.white, indicatorColor: const Color(0xFFFFE5EA),
