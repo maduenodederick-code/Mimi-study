@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' show FontFeature;
 import 'package:flutter/material.dart';
+import 'ai_assistant_page.dart';
 
 void main() => runApp(const MimiStudyApp());
 const blush = Color(0xFFF4A9B8), cream = Color(0xFFFFFAF7), ink = Color(0xFF45383B), muted = Color(0xFF927F83), line = Color(0xFFF3E9E7);
@@ -50,7 +51,7 @@ class _MainShellState extends State<MainShell> {
     final pages = [
       HomePage(tasks: tasks, addTask: addTask, openTimer: openTimer, refresh: () => setState(() {}), goPlan: () => setState(() => tab = 1)),
       PlanPage(tasks: tasks, addTask: addTask, refresh: () => setState(() {})),
-      const PlaceholderPage(title: 'AI 助手', subtitle: '让 Mimi 陪你规划、答疑和复习。', icon: Icons.auto_awesome_rounded),
+      const AiAssistantPage(),
       const PlaceholderPage(title: '知识库', subtitle: '集中整理课程、笔记与知识卡片。', icon: Icons.menu_book_rounded),
       const PlaceholderPage(title: '我的', subtitle: '查看学习记录与个人设置。', icon: Icons.person_rounded),
     ];
