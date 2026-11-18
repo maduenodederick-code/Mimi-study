@@ -46,4 +46,26 @@ void main() {
     expect(find.byType(TextField), findsOneWidget);
   });
 
+
+  testWidgets('knowledge base can create and search a note', (tester) async {
+    await tester.pumpWidget(const MimiStudyApp());
+
+    await tester.tap(find.text('知识库'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('还没有笔记'), findsOneWidget);
+    await tester.tap(find.text('新建笔记'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.widgetWithText(TextField, '笔记标题'), '药物分析重点');
+    await tester.enterText(find.widgetWithText(TextField, '笔记内容'), '液相色谱的基本原理');
+    await tester.tap(find.text('保存'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('药物分析重点'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, '色谱');
+    await tester.pumpAndSettle();
+    expect(find.text('药物分析重点'), findsOneWidget);
+  });
+
 }
