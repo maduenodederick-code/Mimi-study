@@ -7,9 +7,10 @@ const _muted = Color(0xFF927F83);
 const _line = Color(0xFFF3E9E7);
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key, required this.tasks, required this.focusMinutes, required this.onResetData});
+  const ProfilePage({super.key, required this.tasks, required this.focusMinutes, required this.focusSessions, required this.onResetData});
   final List<StudyTask> tasks;
   final int focusMinutes;
+  final List<Map<String, dynamic>> focusSessions;
   final Future<void> Function() onResetData;
 
   @override
@@ -37,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('清空所有学习数据？'),
-        content: const Text('这将删除所有学习任务、知识库笔记和累计专注时长，且无法恢复。'),
+        content: const Text('这将删除所有学习任务、知识库笔记、累计专注时长和每日专注记录，且无法恢复。'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('取消')),
           FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('确认清空')),
@@ -56,6 +57,19 @@ class _ProfilePageState extends State<ProfilePage> {
     final completed = widget.tasks.where((task) => task.completed).length;
     final total = widget.tasks.length;
     final rate = total == 0 ? 0 : (completed / total * 100).round();
+    final sessionsByDate = <String, Map<String, dynamic>>{
+      for (final record in widget.focusSessions)
+        if (record['date'] is String) record['date'] as String: record,
+    };
+    final lastSevenDays = List.generate(7, (index) {
+      final date = DateTime.now().subtract(Duration(days: 6 - index));
+      final key = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      return (date: date, record: sessionsByDate[key]);
+    });
+    final maxDailyMinutes = lastSevenDays.fold<int>(0, (maxValue, day) {
+      final minutes = day.record?['minutes'] as int? ?? 0;
+      return minutes > maxValue ? minutes : maxValue;
+    });
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 30),
       children: [
@@ -93,6 +107,39 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
         const SizedBox(height: 24),
+        const Text('最近 7 天专注', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: _ink)),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: _line)),
+          child: Column(
+            children: lastSevenDays.map((day) {
+              final minutes = day.record?['minutes'] as int? ?? 0;
+              final count = day.record?['sessions'] as int? ?? 0;
+              final today = DateTime.now();
+              final isToday = day.date.year == today.year && day.date.month == today.month && day.date.day == today.day;
+              final label = isToday ? '今天' : '${day.date.month.toString().padLeft(2, '0')}/${day.date.day.toString().padLeft(2, '0')}';
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Row(children: [
+                  SizedBox(width: 43, child: Text(label, style: const TextStyle(color: _muted, fontSize: 11))),
+                  Expanded(child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: maxDailyMinutes == 0 ? 0 : minutes / maxDailyMinutes,
+                      minHeight: 8,
+                      backgroundColor: const Color(0xFFFFF0F2),
+                      color: const Color(0xFFF4A9B8),
+                    ),
+                  )),
+                  const SizedBox(width: 10),
+                  SizedBox(width: 88, child: Text('$minutes 分钟 · $count 次', textAlign: TextAlign.end, style: const TextStyle(color: _ink, fontSize: 10))),
+                ]),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 24),
         const Text('应用设置', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: _ink)),
         const SizedBox(height: 10),
         const _Setting(icon: Icons.palette_outlined, title: '外观主题', subtitle: '当前为 Mimi 粉色与奶油色主题'),
@@ -106,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: const BorderSide(color: Color(0xFFE9B7B7))),
         ),
         const SizedBox(height: 8),
-        const Text('清空操作会同时删除任务、笔记和累计专注记录。', textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 11)),
+        const Text('清空操作会同时删除任务、笔记、累计专注时长和每日专注记录。', textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 11)),
       ],
     );
   }
