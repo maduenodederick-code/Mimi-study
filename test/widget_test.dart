@@ -23,7 +23,10 @@ void main() {
   testWidgets('quick action opens the pomodoro timer', (tester) async {
     await tester.pumpWidget(const MimiStudyApp());
 
-    await tester.tap(find.text('番茄钟'));
+    final pomodoroAction = find.text('番茄钟');
+    await tester.ensureVisible(pomodoroAction);
+    await tester.pumpAndSettle();
+    await tester.tap(pomodoroAction);
     await tester.pumpAndSettle();
 
     expect(find.text('番茄专注'), findsOneWidget);
