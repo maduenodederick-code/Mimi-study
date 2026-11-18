@@ -52,4 +52,11 @@ class AppStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_focusMinutesKey, minutes);
   }
+
+  static Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tasksKey);
+    await prefs.remove(_notesKey);
+    await prefs.remove(_focusMinutesKey);
+  }
 }
