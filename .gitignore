@@ -1,0 +1,19 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local data and exported backups
+*.backup.json
+*.export.json
+backup-*.json
+
+# Temporary files
+*.tmp
+*.log
