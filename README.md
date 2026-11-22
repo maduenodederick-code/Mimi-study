@@ -102,12 +102,38 @@ AI 助教默认不会联网。需要使用时，在助教面板中点击“配�
 
 ## 截图
 
-【开屏动画】<img width="1080" height="2400" alt="46560052326cd200beb5bd1555be5a94" src="https://github.com/user-attachments/assets/fbc269d8-ba43-4c06-b980-8c63176af4db" />
-【首页】<img width="1080" height="2400" alt="8a6d16e1f9c45321ae803aa68bef5c23" src="https://github.com/user-attachments/assets/739b2496-fdff-4292-9905-799ce4fecfdf" />
-【学习计划】<img width="1080" height="2400" alt="ebff0f952ab56c16d41398464c518b45" src="https://github.com/user-attachments/assets/4f2c11f5-4e02-4137-92ef-909081be18bd" />
-【专注空间】<img width="1080" height="2400" alt="81492bb1b560fb17e87f714b3e333704" src="https://github.com/user-attachments/assets/98bace1e-3176-4075-906b-5a3aa25923e0" />
-【学习统计】<img width="1080" height="2400" alt="ee3898f762f0f2a84c53227517ac9177" src="https://github.com/user-attachments/assets/00e9c354-82ce-4bdd-954f-4bdfd769b31f" />
-【个人中心】<img width="1080" height="2400" alt="00859e8e4672da502b3a560cfa729fb2" src="https://github.com/user-attachments/assets/eeda1ba5-756b-4ef8-8b6f-0dd0e5e7a99a" />
+## 界面预览
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="46560052326cd200beb5bd1555be5a94.jpg" width="210" alt="开屏启动页" /><br />
+      <sub><b>开屏启动页</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="8a6d16e1f9c45321ae803aa68bef5c23.jpg" width="210" alt="首页总览" /><br />
+      <sub><b>首页总览</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="ebff0f952ab56c16d41398464c518b45.jpg" width="210" alt="本周学习计划" /><br />
+      <sub><b>本周学习计划</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <img src="81492bb1b560fb17e87f714b3e333704.jpg" width="210" alt="番茄专注空间" /><br />
+      <sub><b>番茄专注空间</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="4d283c93c23aeae4dc978d187af9e191.jpg" width="210" alt="学习数据统计" /><br />
+      <sub><b>学习数据统计</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="a475dd2fc798c6f266decc5f39a772c7.jpg" width="210" alt="个人中心与工具" /><br />
+      <sub><b>个人中心与工具</b></sub>
+    </td>
+  </tr>
+</table>
 
 
 ## 常见问题
